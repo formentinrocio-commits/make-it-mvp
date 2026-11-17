@@ -7,6 +7,7 @@ import Plan from './screens/Plan';
 import NuevaMeta from './screens/NuevaMeta';
 import MetaCreada from './screens/MetaCreada';
 import Inicio from './screens/Inicio';
+import Mes from './screens/Mes';
 import Metas from './screens/Metas';
 import Anio from './screens/Anio';
 import Perfil from './screens/Perfil';
@@ -56,6 +57,7 @@ export default function App() {
       <Route path="/meta/:id" element={<MetaDetalle />} />
       <Route path="/meta/:id/editar" element={<NuevaMeta edit />} />
       <Route path="/inicio" element={<Inicio />} />
+      <Route path="/mes/:ym" element={<Mes />} />
       <Route path="/metas" element={<Metas />} />
       <Route path="/anio" element={<Anio />} />
       <Route path="/perfil" element={<Perfil />} />

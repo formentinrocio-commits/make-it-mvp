@@ -24,7 +24,6 @@ export default function Anio() {
   const go = useGo();
   const { goals, profile, decisions, freePlanned } = useStore();
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState<string | null>(null);
   const body = useRef<HTMLDivElement>(null);
   useStagger(body, ':scope > *', 160, 100);
 
@@ -78,21 +77,11 @@ export default function Anio() {
                 </div>
               );
               const aria = `${name} ${year}, ${status.toLowerCase()}: ${r.parts.map((p) => `${p.name} ${fmt(p.v)}`).join(', ')}, ahorro libre ${fmt(r.free)}.`;
-              const head = <div className="row" style={{ width: '100%' }}><span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><b style={{ fontSize: 17, lineHeight: '22px', fontWeight: 700 }}>{name}</b><span className="hint">{status}</span></span><span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><b className="num" style={{ fontSize: 17, fontWeight: 600 }}>{fmt(total)}</b>{(r.cur || r.past) && <span style={{ transform: open === r.key ? 'rotate(90deg)' : 'none', transition: 'transform 200ms ease', display: 'grid' }}><ChevR /></span>}</span></div>;
+              const head = <div className="row" style={{ width: '100%' }}><span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><b style={{ fontSize: 17, lineHeight: '22px', fontWeight: 700 }}>{name}</b><span className="hint">{status}</span></span><span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><b className="num" style={{ fontSize: 17, fontWeight: 600 }}>{fmt(total)}</b>{(r.cur || r.past) && <span style={{ display: 'grid' }}><ChevR /></span>}</span></div>;
               const st = { display: 'flex', flexDirection: 'column' as const, gap: 8, padding: '14px 22px', borderTop: '1px solid #E3E6E7', color: '#11242B', background: 'transparent', border: 0, borderTopStyle: 'solid' as const, width: '100%', textAlign: 'left' as const, font: 'inherit' };
               if (r.cur) return <button key={r.key} type="button" aria-label={aria + ' Ir a hoy.'} onClick={() => go('/inicio', 'tab-l')} style={{ ...st, cursor: 'pointer', borderTop: '1px solid #E3E6E7' }}>{head}{bar}</button>;
               if (!r.past) return <div key={r.key} aria-label={aria} style={{ ...st, borderTop: '1px solid #E3E6E7' }}>{head}{bar}</div>;
-              const isOpen = open === r.key;
-              return (
-                <div key={r.key} style={{ borderTop: '1px solid #E3E6E7' }}>
-                  <button type="button" aria-label={aria} aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : r.key)} style={{ ...st, borderTop: 0, cursor: 'pointer' }}>{head}{bar}</button>
-                  {isOpen && <div className="leg num mi-pop" style={{ padding: '0 22px 14px' }}>
-                    {r.parts.map((p) => <div key={p.id} className="li"><span><span className="sw" style={{ background: GOAL[p.color].bg }} />{p.name}{p.v !== p.planned && <span style={{ color: '#526166' }}> (previsto {fmt(p.planned)})</span>}</span><b>{fmt(p.v)}</b></div>)}
-                    {r.dec.map((d) => <div key={d.id} className="li"><span><span className="sw" style={{ background: '#C4C9CB' }} />{d.item}</span><b>{fmt(d.amount)}</b></div>)}
-                    <div className="li"><span><span className="sw" style={{ background: 'repeating-linear-gradient(150deg, #11242B 0 1.5px, #FFFFFF 1.5px 4px)' }} />Ahorro libre</span><b>{fmt(r.free)}</b></div>
-                  </div>}
-                </div>
-              );
+              return <button key={r.key} type="button" aria-label={aria + ' Ver el mes.'} onClick={() => go(`/mes/${r.key.slice(0, 7)}`, 'up')} style={{ ...st, cursor: 'pointer', borderTop: '1px solid #E3E6E7' }}>{head}{bar}</button>;
             })}
             <div style={{ padding: '12px 22px 6px', borderTop: '1px solid #E3E6E7' }}>
               <div aria-hidden="true" className="leg">

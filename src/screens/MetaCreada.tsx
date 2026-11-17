@@ -17,7 +17,7 @@ export default function MetaCreada() {
     : g.priority === 'alta' ? 'Alta: si una compra no entra en tu ahorro libre, la tocamos después que a las metas de menor prioridad.'
     : g.priority === 'media' ? 'Media: puede ajustarse algún mes si una compra no entra en tu ahorro libre.'
     : 'Baja: es la primera que proponemos ajustar si una compra no entra en tu ahorro libre.';
-  const toHome = async () => { if (!profile?.onboarded) await saveProfile({ onboarded: true }); go('/inicio', 'fade'); };
+  const toHome = async () => { try { sessionStorage.setItem('mi-toast', `Guardamos ${g.name}`); } catch { /* */ } if (!profile?.onboarded) await saveProfile({ onboarded: true }); go('/inicio', 'fade'); };
   return (
     <Screen>
       <div className="scroller">

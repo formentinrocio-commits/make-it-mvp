@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../lib/store';
-import { Screen, useGo, Arrow, Plus, useStagger } from '../ui/nav';
+import { Screen, useGo, Arrow, Plus, Check, useStagger } from '../ui/nav';
 import { HEADER_BG, PrioChip, arrivalLabel, savingWhere } from '../ui/parts';
 import TabBar, { GlassDefs, ScrollEdge } from '../ui/TabBar';
+import { MonthMenu } from './Mes';
 import { GOAL, stripes } from '../lib/tokens';
-import { fmt, fmtMonthLong } from '../lib/money';
+import { fmt } from '../lib/money';
 import { delayLabel, type GoalView } from '../lib/model';
 
 export const initials = (name?: string) => { const w = (name || '?').trim().split(/\s+/); return (w.length > 1 ? w[0][0] + w[1][0] : w[0].slice(0, 2)).toUpperCase(); };
@@ -22,7 +23,7 @@ export function TopBar({ month = true }: { month?: boolean }) {
   const { profile } = useStore();
   return (
     <div style={{ position: 'sticky', top: 0, zIndex: 4, height: 108, padding: '54px 20px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      {month ? <span className="glassbar chipglass" style={{ whiteSpace: 'nowrap' }}><span aria-hidden="true" className="badge b32" style={{ background: '#FFFFFF' }}>🗓️</span><span className="lbl" style={{ color: '#11242B' }}>{fmtMonthLong(new Date())}</span></span> : <span />}
+      {month ? <MonthMenu /> : <span />}
       <button type="button" className="avatar" aria-label="Tu perfil" onClick={() => go('/perfil', 'tab-r')}>{initials(profile?.name)}</button>
     </div>
   );
@@ -59,6 +60,8 @@ export default function Inicio() {
   const go = useGo();
   const { profile, goals, freePlanned, freeLeft, monthDecisions, spent } = useStore();
   const [scrolled, setScrolled] = useState(false);
+  const [toast, setToast] = useState<string | null>(() => { try { const t = sessionStorage.getItem('mi-toast'); sessionStorage.removeItem('mi-toast'); return t; } catch { return null; } });
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 5000); return () => clearTimeout(t); }, [toast]);
   const list = useRef<HTMLDivElement>(null);
   useStagger(list, ':scope > *', 160, 80);
 
@@ -123,7 +126,8 @@ export default function Inicio() {
         </div>
       </div>
       <ScrollEdge on={scrolled} />
-      <TabBar current={0} scrolled={scrolled} coach />
+      {toast && <div role="status" className="mi-toast"><Check c="#2F6B45" s={16} /><span style={{ flex: 1 }}>{toast}</span><button type="button" onClick={() => setToast(null)} aria-label="Cerrar aviso" style={{ width: 44, height: 44, border: 0, padding: 0, borderRadius: 999, background: 'rgba(47,107,69,0.12)', display: 'grid', placeItems: 'center', cursor: 'pointer', flex: 'none' }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2F6B45" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button></div>}
+      <TabBar current={0} scrolled={scrolled} coach={!toast} />
     </Screen>
   );
 }
