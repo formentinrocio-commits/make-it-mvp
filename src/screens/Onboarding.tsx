@@ -27,7 +27,7 @@ function Shell({ step, children, text, stageLabel, onSkip, back, footer, rootRef
   return (
     <div ref={rootRef} style={{ position: 'absolute', inset: 0 }}>
       <div className="scroller">
-        <div style={{ padding: '58px 20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 }}>
+        <div style={{ padding: 'var(--top) 20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 }}>
           {back ? <button type="button" className="glass" aria-label="Atrás" onClick={back}><Chevron /></button> : <span style={{ width: 44 }} />}
           <button type="button" className="skip" onClick={onSkip}>Omitir</button>
         </div>

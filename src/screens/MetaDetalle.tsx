@@ -71,7 +71,7 @@ export default function MetaDetalle() {
   return (
     <Screen bg={c.bg} onEnter={() => true}>
       <div ref={root} className="scroller" style={{ color: '#11242B' }}>
-        <header style={{ padding: '58px 20px 12px' }}>
+        <header style={{ padding: 'var(--top) 20px 12px' }}>
           <div className="row" style={{ minHeight: 44 }}>
             <button type="button" className="glass" aria-label="Volver" onClick={() => back('/inicio')}><Chevron /></button>
             <span className="prio" style={{ background: 'rgba(255,255,255,0.45)' }}>{g.priority === 'protegida' ? <><Lock />Protegida</> : <><Lvl p={g.priority} />Prioridad {g.priority}</>}</span>

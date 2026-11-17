@@ -39,8 +39,9 @@ export default function Perfil() {
 
   return (
     <Screen>
-      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 120; if (v !== scrolled) setScrolled(v); }}>
-        <header style={{ padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 4; if (v !== scrolled) setScrolled(v); }}>
+        <ScrollEdge on={scrolled} />
+        <header style={{ padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><span className="lbl" style={{ color: '#526166' }}>Tu cuenta</span></div>
           <h1 style={{ margin: 0, fontSize: 34, lineHeight: '40px', fontWeight: 400, letterSpacing: '-0.02em' }}>Tu <b style={{ fontWeight: 800 }}>perfil</b></h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -77,7 +78,6 @@ export default function Perfil() {
           <p className="hint" style={{ margin: 0, textAlign: 'center' }}>Make It no se conecta a tu banco ni mueve dinero. Tus datos quedan en tu cuenta.</p>
         </div>
       </div>
-      <ScrollEdge on={scrolled} h={130} />
       <TabBar current={3} scrolled={scrolled} />
       {del && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(17,36,43,0.32)', display: 'grid', placeItems: 'center', padding: 36, animation: 'mi-fade 200ms ease' }} onClick={(e) => { if (e.target === e.currentTarget && !busy) setDel(false); }}>

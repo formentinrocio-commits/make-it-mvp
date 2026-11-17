@@ -25,7 +25,7 @@ const shortName = (n: string) => n.replace(/^(Viaje a |Cambiar el |Comprar (el |
 
 function PurchaseHead({ d, onBack, backLabel, title }: { d: Draft; onBack?: () => void; backLabel?: string; title?: React.ReactNode }) {
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: '58px 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: 'var(--top) 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="row" style={{ minHeight: 44 }}>
         {onBack && <button type="button" className="glass" aria-label={backLabel} onClick={onBack}><Chevron /></button>}
         <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexGrow: 1, minWidth: 0 }}><span aria-hidden="true" className="badge b40" style={{ background: '#FFFFFF' }}>{d.emoji}</span><span className="num" style={{ fontSize: 17, lineHeight: '22px', fontWeight: 600 }}>{d.item} · {fmt(d.amount)}</span></span>
@@ -71,7 +71,7 @@ export function Evaluar() {
   return (
     <Screen>
       <div className="scroller">
-        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><button type="button" className="glass" aria-label="Cancelar" onClick={() => { writeDraft(null); go('/inicio', 'back'); }}><X /></button><span className="lbl" style={{ color: '#526166' }}>Evaluar una compra</span></div>
           <H1 a="¿Qué querés " b="comprar?" />
         </header>
@@ -225,7 +225,7 @@ export function Explorar() {
   return (
     <Screen>
       <div className="scroller">
-        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: '58px 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: 'var(--top) 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><button type="button" className="glass" aria-label="Volver al ajuste sugerido" onClick={() => go('/compro/ajuste', 'back')}><Chevron /></button><span className="lbl" style={{ color: '#526166' }}>Otros ajustes</span></div>
         </header>
         <section style={{ padding: '0 20px 24px', borderRadius: '0 0 40px 40px', background: SEC_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -419,7 +419,7 @@ export function Resumen() {
   return (
     <Screen>
       <div className="scroller">
-        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: '58px 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <header style={{ position: 'sticky', top: 0, zIndex: 4, padding: 'var(--top) 20px 14px', background: SUB_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><span className="lbl" style={{ color: '#526166' }}>Tu decisión</span></div>
           <H1 a="Plan " b={bought ? 'actualizado' : 'sin cambios'} />
         </header>

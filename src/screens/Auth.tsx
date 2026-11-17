@@ -10,7 +10,7 @@ const mailOk = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.trim());
 
 export function AuthHeader({ kicker, h1a, h1b, lead, onBack }: { kicker: string; h1a: string; h1b: string; lead: string; onBack: () => void }) {
   return (
-    <header style={{ padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: 'radial-gradient(120% 60% at 15% 0%, #FFFFFF 0%, rgba(255,255,255,0) 60%), radial-gradient(90% 55% at 100% 35%, #E4F2F9 0%, rgba(228,242,249,0) 70%), #EDEFF0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <header style={{ padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: 'radial-gradient(120% 60% at 15% 0%, #FFFFFF 0%, rgba(255,255,255,0) 60%), radial-gradient(90% 55% at 100% 35%, #E4F2F9 0%, rgba(228,242,249,0) 70%), #EDEFF0', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="row" style={{ minHeight: 44 }}>
         <button type="button" className="glass" aria-label="Atrás" onClick={onBack}><Chevron /></button>
         <span className="lbl" style={{ color: '#526166' }}>{kicker}</span>

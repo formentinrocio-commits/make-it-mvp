@@ -17,7 +17,7 @@ export default function Splash() {
   return (
     <Screen bg="#F5F5F5">
       <div ref={ref} style={{ position: 'absolute', inset: 0 }}>
-        <canvas className="sp-cv" width={390} height={844} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />
+        <canvas className="sp-cv" width={390} height={844} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} />
         <div className="sp-ui" style={{ position: 'absolute', left: 12, right: 12, bottom: 12, padding: '24px 20px 22px', borderRadius: 40, display: 'flex', flexDirection: 'column', gap: 20, opacity: 0, background: 'rgba(245,245,245,0.72)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', backdropFilter: 'blur(24px) saturate(1.6)', boxShadow: '0 16px 40px rgba(17,36,43,0.16), inset 0 0 0 0.5px rgba(255,255,255,0.8)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 4px' }}>
             <span className="lbl" style={{ color: '#36474D' }}>Make It!</span>

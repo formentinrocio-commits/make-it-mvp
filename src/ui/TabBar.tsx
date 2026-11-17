@@ -71,4 +71,5 @@ export default function TabBar({ current, scrolled, coach }: { current: number; 
 }
 
 /* Velo de borde de scroll (como iOS): aparece cuando el contenido pasa por debajo del encabezado */
-export const ScrollEdge = ({ on, h = 190 }: { on: boolean; h?: number }) => on ? <div aria-hidden="true" className="scroll-edge" style={{ height: h }} /> : null;
+/* Va como primer hijo del scroller: queda pegado arriba, debajo de los botones fijos y encima del contenido */
+export const ScrollEdge = ({ on, h = 'calc(var(--top) + 24px)' }: { on: boolean; h?: string }) => <div aria-hidden="true" className={'scroll-edge' + (on ? ' on' : '')} style={{ height: h, marginBottom: `calc(-1 * ${h})` }} />;

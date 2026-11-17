@@ -22,7 +22,7 @@ export function TopBar({ month = true }: { month?: boolean }) {
   const go = useGo();
   const { profile } = useStore();
   return (
-    <div style={{ position: 'sticky', top: 0, zIndex: 4, height: 108, padding: '54px 20px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ position: 'sticky', top: 0, zIndex: 4, height: 'calc(var(--top) + 50px)', padding: 'calc(var(--top) - 4px) 20px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       {month ? <MonthMenu /> : <span />}
       <button type="button" className="avatar" aria-label="Tu perfil" onClick={() => go('/perfil', 'tab-r')}>{initials(profile?.name)}</button>
     </div>
@@ -60,6 +60,8 @@ export default function Inicio() {
   const go = useGo();
   const { profile, goals, freePlanned, freeLeft, monthDecisions, spent } = useStore();
   const [scrolled, setScrolled] = useState(false);
+  const [edge, setEdge] = useState(0);
+  const head = useRef<HTMLElement>(null);
   const [toast, setToast] = useState<string | null>(() => { try { const t = sessionStorage.getItem('mi-toast'); sessionStorage.removeItem('mi-toast'); return t; } catch { return null; } });
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 5000); return () => clearTimeout(t); }, [toast]);
   const list = useRef<HTMLDivElement>(null);
@@ -81,9 +83,10 @@ export default function Inicio() {
   return (
     <Screen>
       <GlassDefs />
-      <div className="scroller" onScroll={(e) => { const s = e.currentTarget.scrollTop > 120; if (s !== scrolled) setScrolled(s); }}>
+      <div className="scroller" onScroll={(e) => { const y = e.currentTarget.scrollTop, s = y > 120, ed = y > 4 ? (head.current && y > head.current.offsetHeight - head.current.offsetTop - 60 ? 2 : 1) : 0; if (s !== scrolled) setScrolled(s); if (ed !== edge) setEdge(ed); }}>
+        <ScrollEdge on={edge > 0} h={edge === 2 ? 'calc(var(--top) + 128px)' : 'calc(var(--top) + 72px)'} />
         <TopBar />
-        <section style={{ marginTop: -108, padding: '112px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <section ref={head} style={{ marginTop: 'calc(-1 * (var(--top) + 50px))', padding: 'calc(var(--top) + 54px) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <h1 style={{ margin: 0, fontSize: 34, lineHeight: '40px', fontWeight: 400, letterSpacing: '-0.02em' }}>Hola <span aria-hidden="true" className="emoji">👋</span> <b style={{ fontWeight: 800 }}>{profile?.name},</b><br /><span style={{ color: '#526166' }}>este mes ahorrás</span></h1>
             <span className="num count" style={{ fontSize: 66, lineHeight: '68px', fontWeight: 800, letterSpacing: '-0.035em' }}>{fmt(saving)}</span>
@@ -117,7 +120,7 @@ export default function Inicio() {
           {!spent && <div className="num row" style={{ background: '#FFFFFF', borderRadius: 24, padding: '14px 18px' }}><span style={{ display: 'flex', flexDirection: 'column' }}><b style={{ fontSize: 15, lineHeight: '20px', fontWeight: 600 }}>Ahorro libre</b><span className="hint">Lo que queda después de tus metas</span></span><b style={{ fontSize: 30, lineHeight: '34px', fontWeight: 800, letterSpacing: '-0.02em' }}>{fmt(freePlanned)}</b></div>}
         </section>
         <div style={{ height: 12 }} />
-        <div style={{ position: 'sticky', top: 108, zIndex: 3, padding: '10px 20px 10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ position: 'sticky', top: 'calc(var(--top) + 50px)', zIndex: 3, padding: '10px 20px 10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span className="lbl" style={{ color: '#526166' }}>Tus metas</span>
           <button type="button" className="newgoal" onClick={() => go('/nueva-meta', 'up')}><Plus c="#11242B" s={14} />Nueva meta</button>
         </div>
@@ -125,7 +128,6 @@ export default function Inicio() {
           {sorted.map((g) => <GoalCard key={g.id} g={g} delay={delayOf(g.id)} compact={long(g) && !delayOf(g.id)} onOpen={(e) => open(e, g)} />)}
         </div>
       </div>
-      <ScrollEdge on={scrolled} />
       {toast && <div role="status" className="mi-toast"><Check c="#2F6B45" s={16} /><span style={{ flex: 1 }}>{toast}</span><button type="button" onClick={() => setToast(null)} aria-label="Cerrar aviso" style={{ width: 44, height: 44, border: 0, padding: 0, borderRadius: 999, background: 'rgba(47,107,69,0.12)', display: 'grid', placeItems: 'center', cursor: 'pointer', flex: 'none' }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2F6B45" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button></div>}
       <TabBar current={0} scrolled={scrolled} coach={!toast} />
     </Screen>

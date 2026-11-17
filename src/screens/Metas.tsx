@@ -21,8 +21,9 @@ export default function Metas() {
   const bySaved = [...goals].sort((a, b) => b.saved - a.saved);
   return (
     <Screen>
-      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 120; if (v !== scrolled) setScrolled(v); }}>
-        <header style={{ padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 4; if (v !== scrolled) setScrolled(v); }}>
+        <ScrollEdge on={scrolled} />
+        <header style={{ padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><span className="lbl" style={{ color: '#526166' }}>{fmtMonthLong(new Date())}</span></div>
           <h1 style={{ margin: 0, fontSize: 34, lineHeight: '40px', fontWeight: 400, letterSpacing: '-0.02em' }}>Tus <b style={{ fontWeight: 800 }}>metas</b></h1>
           <div className="num" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -41,7 +42,6 @@ export default function Metas() {
           {!goals.length && <p className="hint" style={{ textAlign: 'center', padding: 24 }}>Todavía no tenés metas. Creá la primera.</p>}
         </div>
       </div>
-      <ScrollEdge on={scrolled} h={130} />
       <TabBar current={1} scrolled={scrolled} />
     </Screen>
   );

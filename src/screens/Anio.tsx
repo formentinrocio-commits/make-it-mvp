@@ -54,8 +54,9 @@ export default function Anio() {
 
   return (
     <Screen>
-      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 120; if (v !== scrolled) setScrolled(v); }}>
-        <header style={{ padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 4; if (v !== scrolled) setScrolled(v); }}>
+        <ScrollEdge on={scrolled} />
+        <header style={{ padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="row" style={{ minHeight: 44 }}><span className="lbl" style={{ color: '#526166' }}>{year}</span></div>
           <h1 style={{ margin: 0, fontSize: 34, lineHeight: '40px', fontWeight: 400, letterSpacing: '-0.02em' }}>Tu <b style={{ fontWeight: 800 }}>año</b></h1>
           <span className="num" style={{ fontSize: 17, lineHeight: '24px', color: '#36474D' }}>En {year} llevás <b style={{ color: '#11242B' }}>{fmt(aportado)}</b> aportados a tus metas y <b style={{ color: '#11242B' }}>{fmt(libre)}</b> de ahorro libre.</span>
@@ -106,7 +107,6 @@ export default function Anio() {
           <p className="hint" style={{ margin: 0, textAlign: 'center' }}>Tocá un mes para verlo. Los meses pasados se ven en modo lectura.</p>
         </div>
       </div>
-      <ScrollEdge on={scrolled} h={130} />
       <TabBar current={2} scrolled={scrolled} />
     </Screen>
   );

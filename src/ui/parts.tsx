@@ -9,7 +9,7 @@ export const HEADER_BG = 'radial-gradient(120% 60% at 15% 0%, #FFFFFF 0%, rgba(2
 /* Encabezado de pantalla interna: botón vidrio + etiqueta + título de dos pesos */
 export function Header({ kicker, onBack, backLabel = 'Atrás', backIcon, right, children, sticky }: { kicker?: string; onBack?: () => void; backLabel?: string; backIcon?: ReactNode; right?: ReactNode; children?: ReactNode; sticky?: boolean }) {
   return (
-    <header style={{ position: sticky ? 'sticky' : 'relative', top: 0, zIndex: 4, padding: '58px 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <header style={{ position: sticky ? 'sticky' : 'relative', top: 0, zIndex: 4, padding: 'var(--top) 20px 24px', borderRadius: '0 0 40px 40px', background: HEADER_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="row" style={{ minHeight: 44 }}>
         {onBack ? <button type="button" className="glass" aria-label={backLabel} onClick={onBack}>{backIcon || <Chevron />}</button> : null}
         {kicker && <span className="lbl" style={{ color: '#526166', marginLeft: onBack ? 0 : undefined }}>{kicker}</span>}

@@ -82,8 +82,9 @@ export default function Mes() {
   return (
     <Screen>
       <GlassDefs />
-      <div ref={sc} className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 120; if (v !== scrolled) setScrolled(v); }}>
-        <div style={{ position: 'sticky', top: 0, zIndex: 4, padding: '54px 20px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(#EDEFF0 70%, rgba(237,239,240,0))' }}>
+      <div ref={sc} className="scroller" onScroll={(e) => { const v = e.currentTarget.scrollTop > 4; if (v !== scrolled) setScrolled(v); }}>
+        <ScrollEdge on={scrolled} />
+        <div style={{ position: 'sticky', top: 0, zIndex: 4, padding: 'calc(var(--top) - 4px) 20px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(#EDEFF0 70%, rgba(237,239,240,0))' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 14px 4px 4px', borderRadius: 999, background: '#FFFFFF' }}><span aria-hidden="true" className="badge b32" style={{ background: '#EDEFF0' }}>🗓️</span><span className="lbl">{monthLabel(d)}</span></span>
           <button type="button" aria-label={`Volver a hoy, ${MONTHS[new Date().getMonth()]} ${new Date().getFullYear()}`} onClick={() => back('/inicio')} style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 18px', border: 0, borderRadius: 999, background: '#11242B', color: '#FFFFFF', font: '600 15px var(--font)', cursor: 'pointer' }}>Hoy</button>
         </div>
@@ -126,7 +127,6 @@ export default function Mes() {
           {later.length > 0 && <p className="hint" style={{ margin: '4px 4px 0' }}>{later.length === 1 ? `${later[0].name} todavía no existía: la creaste el ${fmtDay(later[0].created_at.slice(0, 10))}.` : `${joinY(later.map((g) => g.name))} todavía no existían en ${name}.`}</p>}
         </div>
       </div>
-      <ScrollEdge on={scrolled} h={130} />
       <TabBar current={0} scrolled />
     </Screen>
   );
