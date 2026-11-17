@@ -100,3 +100,15 @@ export function MoneyInput({ id, value, onChange, label, big, bad, describedBy, 
     </span>
   );
 }
+
+/* Dónde queda el ahorro del mes después de las compras: qué metas reciben aporte y cuáles no */
+export const joinY = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}`);
+export function savingWhere(goals: GoalView[], freeLeft: number) {
+  const to = goals.filter((g) => g.thisMonth > 0).map((g) => g.name);
+  if (freeLeft > 0) to.push('tu ahorro libre');
+  const off = goals.filter((g) => g.monthly > 0 && g.thisMonth <= 0).map((g) => g.name);
+  return {
+    to: to.length ? `en ${joinY(to)}` : '',
+    off: off.length ? `${joinY(off)} no ${off.length === 1 ? 'recibe' : 'reciben'} aporte este mes.` : '',
+  };
+}

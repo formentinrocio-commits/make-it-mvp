@@ -5,6 +5,7 @@ export const parseMoney = (s: string) => {
   return d ? parseInt(d, 10) : 0;
 };
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+export const capFirst = (s: string) => { const t = s.trim(); return t ? t[0].toLocaleUpperCase('es-AR') + t.slice(1) : t; };
 export const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 export const toDate = (iso: string) => new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
 export const iso = (x: Date) => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;

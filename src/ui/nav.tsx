@@ -9,13 +9,13 @@ export const setDir = (d: Dir) => { nextDir = d; };
 
 export function useGo() {
   const nav = useNavigate();
-  return (to: string, dir: Dir = 'push') => { nextDir = dir; nav(to); };
+  return (to: string, dir: Dir = 'push') => { nextDir = dir; nav(to, { replace: dir === 'back' }); };
 }
 
 /* Volver: atrás en el historial si hay de dónde, si no a la pantalla indicada */
 export function useBack() {
   const nav = useNavigate();
-  return (fallback = '/inicio') => { nextDir = 'back'; const idx = (window.history.state as { idx?: number } | null)?.idx || 0; if (idx > 0) nav(-1); else nav(fallback); };
+  return (fallback = '/inicio', dir: Dir = 'back') => { nextDir = dir; const idx = (window.history.state as { idx?: number } | null)?.idx || 0; if (idx > 0) nav(-1); else nav(fallback); };
 }
 
 export function Screen({ children, bg = '#F5F5F5', style, onEnter }: { children: ReactNode; bg?: string; style?: CSSProperties; onEnter?: (el: HTMLDivElement, dir: Dir) => boolean | void }) {
@@ -67,4 +67,35 @@ export function useStagger(ref: React.RefObject<HTMLElement | null>, selector = 
     Array.from(el.querySelectorAll(selector)).forEach((n, i) => (n as HTMLElement).animate?.([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: base + i * step, easing: EASE.out, fill: 'backwards' }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+}
+
+/* Gesto de iOS: deslizar desde el borde izquierdo para volver. La pantalla sigue al dedo y, si pasa la mitad o se suelta rápido, vuelve. */
+export function useSwipeBack(ref: React.RefObject<HTMLElement | null>, onBack: () => void, deps: unknown[] = []) {
+  useEffect(() => {
+    const el = ref.current?.closest('.screen') as HTMLElement | null; if (!el) return;
+    let s: { x: number; y: number; t: number; id: number } | null = null, on = false;
+    const down = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      if (e.clientX - r.left > 24 || e.button > 0) return;
+      s = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }; on = false;
+    };
+    const move = (e: PointerEvent) => {
+      if (!s || e.pointerId !== s.id) return;
+      const dx = e.clientX - s.x, dy = e.clientY - s.y;
+      if (!on) { if (Math.abs(dx) < 8) return; if (Math.abs(dy) > Math.abs(dx)) { s = null; return; } on = true; el.setPointerCapture(e.pointerId); }
+      el.style.transition = 'none'; el.style.transform = `translateX(${Math.max(0, dx)}px)`; el.style.boxShadow = '-12px 0 30px rgba(17,36,43,.18)';
+    };
+    const up = (e: PointerEvent) => {
+      if (!s || e.pointerId !== s.id) return;
+      const dx = e.clientX - s.x, v = dx / Math.max(1, performance.now() - s.t), w = el.offsetWidth; const was = on; s = null; on = false;
+      if (!was) return;
+      if (dx > w * 0.5 || (v > 0.5 && dx > 40)) {
+        el.style.transition = 'transform 220ms cubic-bezier(.2,.8,.2,1)'; el.style.transform = `translateX(${w}px)`;
+        setTimeout(onBack, 200);
+      } else { el.style.transition = 'transform 260ms cubic-bezier(.2,.8,.2,1)'; el.style.transform = ''; setTimeout(() => { el.style.boxShadow = ''; }, 260); }
+    };
+    el.addEventListener('pointerdown', down); el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+    return () => { el.removeEventListener('pointerdown', down); el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 }

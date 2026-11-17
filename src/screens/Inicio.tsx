@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useStore } from '../lib/store';
 import { Screen, useGo, Arrow, Plus, useStagger } from '../ui/nav';
-import { HEADER_BG, PrioChip, arrivalLabel } from '../ui/parts';
+import { HEADER_BG, PrioChip, arrivalLabel, savingWhere } from '../ui/parts';
 import TabBar, { GlassDefs, ScrollEdge } from '../ui/TabBar';
 import { GOAL, stripes } from '../lib/tokens';
 import { fmt, fmtMonthLong } from '../lib/money';
@@ -84,7 +84,10 @@ export default function Inicio() {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <h1 style={{ margin: 0, fontSize: 34, lineHeight: '40px', fontWeight: 400, letterSpacing: '-0.02em' }}>Hola <span aria-hidden="true" className="emoji">👋</span> <b style={{ fontWeight: 800 }}>{profile?.name},</b><br /><span style={{ color: '#526166' }}>este mes ahorrás</span></h1>
             <span className="num count" style={{ fontSize: 66, lineHeight: '68px', fontWeight: 800, letterSpacing: '-0.035em' }}>{fmt(saving)}</span>
-            {spent > 0 && <span className="num" style={{ fontSize: 15, lineHeight: '20px', color: '#36474D' }}>Tenías previsto {fmt(total)}. {fmt(spent)} {monthDecisions.length === 1 ? `fueron a ${monthDecisions[0].item}` : `fueron a ${monthDecisions.length} compras`}.</span>}
+            {spent > 0 && (() => { const w = savingWhere(goals, freeLeft); return <>
+              {w.to && <span style={{ fontSize: 20, lineHeight: '26px', fontWeight: 600, letterSpacing: '-0.01em' }}>{w.to}</span>}
+              <span className="num" style={{ fontSize: 15, lineHeight: '20px', color: '#36474D', marginTop: 6 }}>{w.off ? `${w.off} ` : ''}Tenías previsto {fmt(total)}; {fmt(spent)} {monthDecisions.length === 1 ? `fueron a ${monthDecisions[0].item}` : `fueron a ${monthDecisions.length} compras`}.</span>
+            </>; })()}
           </div>
           <div role="img" aria-label={`Distribución de ${fmt(saving)}: ${goals.map((g) => `${g.name} ${fmt(spent ? g.thisMonth : g.monthly)}`).join(', ')}, ahorro libre ${fmt(free)}.`} className="bar bar-grow" style={{ height: 44 }}>
             {parts.filter((p) => p.v > 0).map((p, i, a) => <div key={p.k} style={{ background: p.bg, ...(i === a.length - 1 ? { flexGrow: 1 } : { width: `${((p.v / base) * 100).toFixed(1)}%` }) }} />)}

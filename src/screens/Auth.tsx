@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { capFirst } from '../lib/money';
 import { useStore } from '../lib/store';
 import { Screen, useGo, Chevron, Check } from '../ui/nav';
 import { EASE, calm } from '../lib/tokens';
@@ -62,7 +63,7 @@ export default function Auth({ mode }: { mode: 'registro' | 'login' }) {
       setTimeout(() => go('/', 'fade'), 500);
       return;
     }
-    const r = await supabase.auth.signUp({ email: email.trim(), password: pass, options: { data: { name: name.trim() } } });
+    const r = await supabase.auth.signUp({ email: email.trim(), password: pass, options: { data: { name: capFirst(name) } } });
     if (r.error) {
       setLoading(false);
       setFormErr(/already|registered/i.test(r.error.message) ? 'Ya hay una cuenta con ese email. Iniciá sesión.' : (/password/i.test(r.error.message) ? 'Esa contraseña es muy fácil de adivinar. Probá con otra.' : 'No pudimos crear tu cuenta. Probá de nuevo en un rato.'));
@@ -73,9 +74,9 @@ export default function Auth({ mode }: { mode: 'registro' | 'login' }) {
       setOk('Te mandamos un mail para confirmar tu cuenta. Confirmalo y después iniciá sesión.');
       return;
     }
-    await supabase.from('mi_profiles').upsert({ user_id: r.data.session.user.id, name: name.trim(), onboarded: false });
+    await supabase.from('mi_profiles').upsert({ user_id: r.data.session.user.id, name: capFirst(name), onboarded: false });
     setLoading(false); setDone(true);
-    setOk(`Listo, ${name.trim()}. Ahora armemos tu mes.`);
+    setOk(`Listo, ${capFirst(name)}. Ahora armemos tu mes.`);
     await reload();
     setTimeout(() => go('/plan', 'push'), 1300);
   };
@@ -94,7 +95,7 @@ export default function Auth({ mode }: { mode: 'registro' | 'login' }) {
           {!login && (
             <div className="field">
               <label htmlFor="au-nom">¿Cómo te llamás?</label>
-              <span className={'fbox' + (nameBad ? ' bad' : '')}><input id="au-nom" className="fin" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="Tu nombre" aria-invalid={nameBad} aria-describedby="au-nom-e" /></span>
+              <span className={'fbox' + (nameBad ? ' bad' : '')}><input id="au-nom" className="fin" autoCapitalize="words" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="Tu nombre" aria-invalid={nameBad} aria-describedby="au-nom-e" /></span>
               {nameBad && <span id="au-nom-e" className="err">Escribí tu nombre.</span>}
             </div>
           )}

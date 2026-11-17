@@ -1,14 +1,14 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStore } from '../lib/store';
-import { Screen, useGo, Check, Lock, Chevron, setDir } from '../ui/nav';
+import { Screen, useGo, useBack, useSwipeBack, Check, Lock, setDir } from '../ui/nav';
 import { Foot, H1, Header, Lvl, MoneyInput, X } from '../ui/parts';
+import DatePicker from '../ui/DatePicker';
 import { GOAL, COLOR_ORDER, type GoalColor } from '../lib/tokens';
-import { fmt, iso, MONTHS, toDate } from '../lib/money';
+import { fmt, iso, toDate, capFirst } from '../lib/money';
 import { emojiFor, PRIO_LABEL, type Priority } from '../lib/model';
 
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 const pad = (n: number) => String(n).padStart(2, '0');
 const EMOJIS = ['✈️', '🏖️', '🗺️', '🏔️', '🏕️', '🚲', '🏠', '🔑', '🛋️', '🪴', '🎓', '💻', '📱', '🎧', '🐶', '🍼', '💍', '🎁', '🏋️', '🛟', '🚗', '🎮', '📺', '🎯'];
 const PR: { id: Priority; copy: string; more: string }[] = [
@@ -21,6 +21,7 @@ const PR: { id: Priority; copy: string; more: string }[] = [
 /* Nueva meta en 5 pasos (nombre, monto y fecha → ahorrado → prioridad → aporte → plan) o edición en una sola pantalla */
 export default function NuevaMeta({ edit }: { edit?: boolean }) {
   const go = useGo();
+  const back = useBack();
   const { id } = useParams();
   const { goals, freePlanned, createGoal, updateGoal } = useStore();
   const g0 = edit ? goals.find((g) => g.id === id) : undefined;
@@ -43,6 +44,8 @@ export default function NuevaMeta({ edit }: { edit?: boolean }) {
   const [aporte, setAporte] = useState<number | null>(g0 ? g0.monthly : null);
   const [busy, setBusy] = useState(false);
   const sc = useRef<HTMLDivElement>(null);
+  const swipe = useRef<() => void>(() => {});
+  useSwipeBack(sc, () => swipe.current(), [step]);
 
   const emoji = pick || emojiFor(name, '🎯');
   const color: GoalColor = g0?.color || COLOR_ORDER.find((c) => !goals.some((x) => x.color === c)) || COLOR_ORDER[goals.length % 4];
@@ -90,13 +93,14 @@ export default function NuevaMeta({ edit }: { edit?: boolean }) {
   else if (step === 4) missing = over ? 'Bajá el aporte' : falta > 0 && ap <= 0 ? 'Ingresá un aporte' : '';
 
   const toStep = (s: number) => { setDir(s < step ? 'back' : 'push'); setStep(s); setEmojiOpen(false); setCal(null); if (sc.current) sc.current.scrollTop = 0; };
-  const cancel = () => go(edit ? `/meta/${id}` : (goals.length ? '/inicio' : '/plan'), 'back');
+  const cancel = () => (edit ? back(`/meta/${id}`) : back(goals.length ? '/inicio' : '/plan'));
+  swipe.current = () => { if (edit || step === 1) { if (edit) back(`/meta/${id}`, 'none'); else back(goals.length ? '/inicio' : '/plan', 'none'); } else { setDir('none'); setStep(step - 1); } };
 
   const save = async () => {
     if (!date || !prio) return;
     setBusy(true);
-    const row = { name: name.trim(), emoji, target, saved_initial: savedEff, monthly: ap, target_date: iso(new Date(date.y, date.m, date.d, 12)), priority: prio };
-    if (edit && id) { await updateGoal(id, row); setBusy(false); go(`/meta/${id}`, 'back'); return; }
+    const row = { name: capFirst(name), emoji, target, saved_initial: savedEff, monthly: ap, target_date: iso(new Date(date.y, date.m, date.d, 12)), priority: prio };
+    if (edit && id) { await updateGoal(id, row); setBusy(false); back(`/meta/${id}`); return; }
     const g = await createGoal(row);
     setBusy(false);
     if (g) go(`/meta-creada/${g.id}`, 'push');
@@ -104,14 +108,6 @@ export default function NuevaMeta({ edit }: { edit?: boolean }) {
 
   const sub = !edit && step > 1 ? (step === 2 ? `${name} · ${fmt(target)}` : step === 5 ? `${name} · ${prio === 'protegida' ? 'protegida' : 'prioridad ' + PRIO_LABEL[prio!].toLowerCase()}` : name) : '';
 
-  /* Calendario */
-  const calCells = useMemo(() => {
-    if (!cal) return [];
-    const first = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7, nd = new Date(cal.y, cal.m + 1, 0).getDate();
-    const out: ({ d: number; past: boolean; sel: boolean; today: boolean } | null)[] = Array(first).fill(null);
-    for (let d = 1; d <= nd; d++) { const idx = cal.y * 12 + cal.m; out.push({ d, past: idx < TI || (idx === TI && d <= TD), today: idx === TI && d === TD, sel: !!date && date.d === d && date.m === cal.m && date.y === cal.y }); }
-    return out;
-  }, [cal, date, TI, TD]);
 
   const s1 = (
     <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -119,7 +115,7 @@ export default function NuevaMeta({ edit }: { edit?: boolean }) {
         <label htmlFor="m-nom">Ponele un nombre</label>
         <span className="fbox" style={{ paddingLeft: 8 }}>
           <button type="button" onClick={() => setEmojiOpen(!emojiOpen)} aria-label={`Emoji de la meta: ${emoji}. Tocá para elegir otro`} aria-expanded={emojiOpen} className="badge b40" style={{ border: 0, cursor: 'pointer', background: GOAL[color].soft, boxShadow: emojiOpen ? 'inset 0 0 0 2px #11242B' : 'none' }}>{emoji}</button>
-          <input id="m-nom" className="fin" value={name} onChange={(e) => setName(e.target.value)} placeholder="Por ejemplo, un viaje" autoComplete="off" />
+          <input id="m-nom" className="fin" autoCapitalize="sentences" value={name} onChange={(e) => setName(e.target.value)} placeholder="Por ejemplo, un viaje" autoComplete="off" />
         </span>
         <span className="hint">{pick ? 'Elegiste este emoji. Tocalo para cambiarlo.' : name.trim() ? 'Emoji sugerido por el nombre. Tocalo para cambiarlo.' : 'Mientras escribís, te sugerimos un emoji.'}</span>
         {emojiOpen && (
@@ -140,25 +136,7 @@ export default function NuevaMeta({ edit }: { edit?: boolean }) {
           </button>
         </span>
         {dateErr ? <span id="m-fecha-ayuda" role="alert" className="err">{dateErr}</span> : <span id="m-fecha-ayuda" className="hint">{date ? `Faltan ${months} ${months === 1 ? 'mes' : 'meses'}. ` : ''}Escribila o elegila en el calendario.</span>}
-        {cal && (
-          <div role="group" aria-label="Calendario" className="card mi-pop" style={{ padding: '14px 14px 10px', gap: 8 }}>
-            <div className="row" style={{ padding: '0 6px' }}>
-              <b aria-live="polite" style={{ fontSize: 17, fontWeight: 600 }}>{cap(MONTHS[cal.m])} {cal.y}</b>
-              <span style={{ display: 'flex', gap: 4 }}>
-                <button type="button" className="calnav" aria-label="Mes anterior" disabled={cal.y * 12 + cal.m <= TI} onClick={() => setCal(cal.m === 0 ? { m: 11, y: cal.y - 1 } : { m: cal.m - 1, y: cal.y })}><Chevron /></button>
-                <button type="button" className="calnav" aria-label="Mes siguiente" onClick={() => setCal(cal.m === 11 ? { m: 0, y: cal.y + 1 } : { m: cal.m + 1, y: cal.y })} style={{ transform: 'scaleX(-1)' }}><Chevron /></button>
-                <button type="button" className="calnav" aria-label="Un año más" onClick={() => setCal({ m: cal.m, y: cal.y + 1 })} style={{ fontSize: 13, fontWeight: 600, width: 'auto', padding: '0 10px' }}>+1 año</button>
-              </span>
-            </div>
-            <div aria-hidden="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontSize: 12, fontWeight: 600, color: '#899397' }}>{['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'].map((d) => <span key={d}>{d}</span>)}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: 2 }}>
-              {calCells.map((c, i) => c ? (
-                <button key={i} type="button" disabled={c.past} aria-pressed={c.sel} aria-label={`${c.today ? 'Hoy, ' : ''}${c.d} de ${MONTHS[cal.m]} de ${cal.y}`} onClick={() => pickDay(c.d, cal.m, cal.y)}
-                  style={{ height: 44, border: 0, borderRadius: 999, cursor: c.past ? 'default' : 'pointer', font: `${c.sel || c.today ? 700 : 400} ${c.sel ? 22 : 19}px var(--font)`, background: c.sel ? '#11242B' : 'transparent', color: c.sel ? '#FFFFFF' : c.past && !c.today ? '#C4C9CB' : '#11242B' }}>{c.d}</button>
-              ) : <span key={i} />)}
-            </div>
-          </div>
-        )}
+        {cal && <DatePicker value={date} min={now} onPick={(v) => pickDay(v.d, v.m, v.y)} />}
       </div>
     </div>
   );

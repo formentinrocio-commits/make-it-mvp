@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { Screen, useGo, Chevron, Lock, Arrow, Check, useStagger } from '../ui/nav';
-import { Foot, H1, HEADER_BG, Lvl, MoneyInput, X, arrivalLabel } from '../ui/parts';
+import { Foot, H1, HEADER_BG, Lvl, MoneyInput, X, arrivalLabel, savingWhere } from '../ui/parts';
 import { AIMark } from '../ui/AIMark';
 import { GOAL, stripes, EASE, calm } from '../lib/tokens';
-import { fmt, fmtMonthShort, addMonths, toDate, MONTHS } from '../lib/money';
+import { fmt, fmtMonthShort, addMonths, toDate, MONTHS, capFirst } from '../lib/money';
 import { PRIO_LABEL, PRIO_LEVEL, delayLabel, impactFor, suggest, type GoalView, type Impact } from '../lib/model';
 
 /* Borrador de la compra que se está evaluando (vive en la sesión del navegador hasta decidir) */
@@ -64,7 +64,7 @@ export function Evaluar() {
   const E = freeLeft, a = amount, over = a > E, diff = Math.max(0, a - E), scale = Math.max(a, E) || 1;
   const ready = a > 0 && name.trim().length > 0;
   const next = () => {
-    writeDraft({ item: name.trim(), emoji: emoji || '🛍️', amount: a });
+    writeDraft({ item: capFirst(name), emoji: emoji || '🛍️', amount: a });
     go(over ? '/compro/ajuste' : '/compro/entra');
   };
   const list = [emojiOf(name), ...EM.map((x) => x[0])].filter((x, i, arr) => x && arr.indexOf(x) === i);
@@ -82,7 +82,7 @@ export function Evaluar() {
               <button type="button" onClick={() => setOpen(!open)} aria-label={emoji ? `Emoji de la compra: ${emoji}. Tocá para cambiarlo` : 'Agregar un emoji a la compra'} aria-expanded={open} className="badge emoji" style={{ width: 44, height: 44, border: 0, cursor: 'pointer', background: '#EDEFF0', fontSize: 22, boxShadow: open ? 'inset 0 0 0 2px #11242B' : 'none' }}>
                 {emoji || <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#526166" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M9 3v12M3 9h12" /></svg>}
               </button>
-              <input id="c-nom" className="fin" value={name} onChange={(e) => setName(e.target.value)} placeholder="Por ejemplo, unas zapatillas" autoComplete="off" />
+              <input id="c-nom" className="fin" autoCapitalize="sentences" value={name} onChange={(e) => setName(e.target.value)} placeholder="Por ejemplo, unas zapatillas" autoComplete="off" />
             </span>
             <span className="hint">{pick ? 'Elegiste este emoji. Tocalo para cambiarlo.' : emoji ? 'Emoji sugerido por el nombre. Tocalo para cambiarlo.' : 'Mientras escribís, te sugerimos un emoji.'}</span>
             {open && <div role="radiogroup" aria-label="Emoji" className="card mi-pop" style={{ padding: 12, display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 4 }}>{list.map((e) => <button key={e} type="button" role="radio" aria-checked={e === emoji} aria-label={e} onClick={() => { setPick(e); setOpen(false); }} className="badge emoji" style={{ width: 38, height: 38, fontSize: 22, border: 0, cursor: 'pointer', background: e === emoji ? '#EDEFF0' : 'transparent' }}>{e}</button>)}</div>}
@@ -414,6 +414,7 @@ export function Resumen() {
   const saving = Math.max(0, total - spent);
   const parts = [...goals.map((g) => ({ k: g.id, bg: GOAL[g.color].bg, v: g.thisMonth })), { k: 'free', bg: stripes(), v: freeLeft }].filter((p) => p.v > 0);
   const base = parts.reduce((s, p) => s + p.v, 0) || 1;
+  const where = savingWhere(goals, freeLeft);
   const done = () => { writeDraft(null); go('/inicio', 'fade'); };
   return (
     <Screen>
@@ -425,8 +426,8 @@ export function Resumen() {
         <section style={{ padding: '0 20px 24px', borderRadius: '0 0 40px 40px', background: SEC_BG, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><span aria-hidden="true" className="badge b40" style={{ background: '#FFFFFF' }}>{d.emoji}</span><span className="num" style={{ fontSize: 17, lineHeight: '22px', fontWeight: 600, textDecoration: bought ? 'none' : 'line-through', textDecorationThickness: 1.5 }}>{d.item} · {fmt(d.amount)}</span></span>
           <div style={{ display: 'flex', flexDirection: 'column', marginTop: 4 }}>
-            <span style={{ fontSize: 22, lineHeight: '28px' }}>Este mes ahorrás <b className="num" style={{ fontWeight: 800 }}>{fmt(saving)}</b></span>
-            {bought ? <span className="num" style={{ fontSize: 15, lineHeight: '20px', color: '#36474D' }}>Tenías previsto {fmt(total)}. {fmt(d.amount)} fueron a {d.item}.</span> : <span style={{ fontSize: 15, lineHeight: '20px', color: '#36474D' }}>Decidiste no comprarlo ahora. Tus aportes siguen como estaban.</span>}
+            <span style={{ fontSize: 22, lineHeight: '28px' }}>Este mes ahorrás <b className="num" style={{ fontWeight: 800 }}>{fmt(saving)}</b>{where.to ? ` ${where.to}` : ''}.</span>
+            {bought ? <span className="num" style={{ fontSize: 15, lineHeight: '20px', color: '#36474D', marginTop: 4 }}>{where.off ? `${where.off} ` : ''}Tenías previsto {fmt(total)}; {fmt(d.amount)} fueron a {d.item}.</span> : <span style={{ fontSize: 15, lineHeight: '20px', color: '#36474D' }}>Decidiste no comprarlo ahora. Tus aportes siguen como estaban.</span>}
           </div>
           <div role="img" aria-label={`Ahorrado este mes, ${fmt(saving)}.`} className="bar bar-grow" style={{ height: 44 }}>{parts.map((p, i) => <div key={p.k} style={{ background: p.bg, ...(i === parts.length - 1 ? { flexGrow: 1 } : { width: `${((p.v / base) * 100).toFixed(1)}%` }) }} />)}</div>
           <div className="leg num">

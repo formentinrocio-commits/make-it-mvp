@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
-import { Screen, useGo, useBack, Chevron, Lock, Arrow, Check } from '../ui/nav';
+import { Screen, useGo, useBack, useSwipeBack, Chevron, Lock, Arrow, Check } from '../ui/nav';
 import { Lvl, arrivalLabel, arrivalPrep } from '../ui/parts';
 import { GOAL, calm, EASE } from '../lib/tokens';
 import { fmt, fmtDay, fmtMonthShort, toDate, MONTHS } from '../lib/money';
@@ -15,6 +15,7 @@ export default function MetaDetalle() {
   const { goals, monthDecisions, profile } = useStore();
   const root = useRef<HTMLDivElement>(null);
   const g = goals.find((x) => x.id === id);
+  useSwipeBack(root, () => back('/inicio', 'none'));
 
   useEffect(() => {
     const el = root.current?.closest('.screen') as HTMLElement | null; if (!el || !el.animate) return;
