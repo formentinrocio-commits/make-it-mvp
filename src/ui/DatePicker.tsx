@@ -100,7 +100,7 @@ export default function DatePicker({ value, onPick, min }: { value: D | null; on
           <div key={idx} className={anim ? `ios-cal-in-${anim}` : ''} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: 2 }}>
             {cells.map((c, i) => c ? (
               <button key={i} type="button" disabled={c.past} aria-pressed={c.sel} aria-label={`${c.today ? 'Hoy, ' : ''}${c.d} de ${MONTHS[view.m]} de ${view.y}`} onClick={() => onPick({ d: c.d, m: view.m, y: view.y })}
-                className={'ios-day' + (c.sel ? ' sel' : '') + (c.today ? ' today' : '')}>{c.d}</button>
+                className={'ios-day' + (c.sel ? ' is-sel' : '') + (c.today ? ' today' : '')}>{c.d}</button>
             ) : <span key={i} />)}
           </div>
         </div>

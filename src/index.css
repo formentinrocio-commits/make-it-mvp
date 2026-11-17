@@ -145,12 +145,12 @@ a:active, button:active { transform: scale(.97); }
 .ios-cal { background: #FFFFFF; border-radius: 32px; padding: 12px 12px 10px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(17,36,43,.08); }
 .ios-cal-nav { width: 44px; height: 44px; border: 0; background: transparent; border-radius: 999px; display: grid; place-items: center; cursor: pointer; }
 .ios-cal-nav:disabled { cursor: default; }
-.ios-day { height: 44px; width: 44px; justify-self: center; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font: 400 20px/1 var(--font); color: #11242B; font-variant-numeric: tabular-nums; transition: background-color 160ms ease, color 160ms ease, transform 140ms ease; }
+.ios-day { width: min(44px, 100%); height: auto; aspect-ratio: 1; padding: 0; display: grid; place-items: center; justify-self: center; align-self: center; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font: 400 20px/1 var(--font); color: #11242B; font-variant-numeric: tabular-nums; transition: background-color 160ms ease, color 160ms ease, transform 140ms ease; }
 .ios-day:disabled { color: rgba(60,60,67,.3); cursor: default; }
 .ios-day.today { color: #11242B; font-weight: 700; }
 .ios-day.today:disabled { color: #11242B; }
-.ios-day.sel { background: #11242B; color: #FFFFFF; font-weight: 600; font-size: 22px; }
-.ios-day:not(:disabled):not(.sel):hover { background: rgba(17,36,43,.06); }
+.ios-day.is-sel { background: #11242B; color: #FFFFFF; font-weight: 600; }
+.ios-day:not(:disabled):not(.is-sel):hover { background: rgba(17,36,43,.06); }
 @keyframes ios-in-r { from { opacity: 0; transform: translateX(28px); } } @keyframes ios-in-l { from { opacity: 0; transform: translateX(-28px); } }
 .ios-cal-in-r { animation: ios-in-r 260ms cubic-bezier(.2,.8,.2,1); } .ios-cal-in-l { animation: ios-in-l 260ms cubic-bezier(.2,.8,.2,1); }
 .wheel::-webkit-scrollbar { display: none; }
