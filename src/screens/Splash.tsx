@@ -22,7 +22,7 @@ export default function Splash() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 4px' }}>
             <span className="lbl" style={{ color: '#36474D' }}>Make It!</span>
             <h1 lang="en" style={{ margin: 0, fontFamily: 'var(--brand)', fontSize: 48, lineHeight: '50px', fontWeight: 700, letterSpacing: '-0.02em' }}>…or not?</h1>
-            <p style={{ margin: 0, fontSize: 22, lineHeight: '28px', fontWeight: 500, letterSpacing: '-0.01em', color: '#11242B' }}>Que tus decisiones no cambien tus planes.</p>
+            <p style={{ margin: 0, fontSize: 22, lineHeight: '28px', fontWeight: 500, letterSpacing: '-0.01em', color: '#11242B' }}>Que tus antojos no cambien tus planes.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button type="button" className="btn btn-p" onClick={() => leave('/onboarding/1', 'crear')}>Crear cuenta</button>

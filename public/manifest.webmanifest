@@ -1,7 +1,7 @@
 {
   "name": "Make It!",
   "short_name": "Make It",
-  "description": "Make it… or not? Que tus decisiones no cambien tus planes.",
+  "description": "Make it… or not? Que tus antojos no cambien tus planes.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
