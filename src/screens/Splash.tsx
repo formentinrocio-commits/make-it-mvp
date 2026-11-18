@@ -19,10 +19,10 @@ export default function Splash() {
       <div ref={ref} style={{ position: 'absolute', inset: 0 }}>
         <canvas className="sp-cv" width={390} height={844} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} />
         <div className="sp-ui" style={{ position: 'absolute', left: 12, right: 12, bottom: 12, padding: '24px 20px 22px', borderRadius: 40, display: 'flex', flexDirection: 'column', gap: 20, opacity: 0, background: 'rgba(245,245,245,0.72)', WebkitBackdropFilter: 'blur(24px) saturate(1.6)', backdropFilter: 'blur(24px) saturate(1.6)', boxShadow: '0 16px 40px rgba(17,36,43,0.16), inset 0 0 0 0.5px rgba(255,255,255,0.8)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 4px' }}>
             <span className="lbl" style={{ color: '#36474D' }}>Make It!</span>
-            <h1 lang="en" style={{ margin: 0, fontFamily: 'var(--brand)', fontSize: 28, lineHeight: '31px', fontWeight: 700, letterSpacing: '-0.01em' }}>…or not?</h1>
-            <p style={{ margin: 0, fontSize: 15, lineHeight: '21px', color: '#36474D' }}>Que tus decisiones no cambien tus planes.</p>
+            <h1 lang="en" style={{ margin: 0, fontFamily: 'var(--brand)', fontSize: 48, lineHeight: '50px', fontWeight: 700, letterSpacing: '-0.02em' }}>…or not?</h1>
+            <p style={{ margin: 0, fontSize: 22, lineHeight: '28px', fontWeight: 500, letterSpacing: '-0.01em', color: '#11242B' }}>Que tus decisiones no cambien tus planes.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button type="button" className="btn btn-p" onClick={() => leave('/onboarding/1', 'crear')}>Crear cuenta</button>
